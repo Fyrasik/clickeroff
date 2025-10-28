@@ -5,25 +5,103 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>F-Clicker Pro</title>
 <style>
-  body {
-    background-color: #111;
-    color: #fff;
-    font-family: Arial, sans-serif;
+  * {
     margin: 0;
-    padding: 10px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
+  
+  body {
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+    min-height: 100vh;
+    padding: 20px;
+    color: #fff;
+  }
+
+  .container {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    padding: 30px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* Login Screen */
+  .screen {
+    display: none;
+    text-align: center;
+  }
+  
+  .active {
+    display: block;
+  }
+  
+  h1 {
+    color: #ffd700;
+    margin-bottom: 20px;
+    font-size: 2.2rem;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  }
+  
+  input {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 15px 0;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+  
+  input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  input:focus {
+    border-color: #ffd700;
+    outline: none;
+  }
+  
+  button {
+    background: linear-gradient(to right, #4a90e2, #63b3ed);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin: 10px 5px;
+  }
+  
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Game Interface */
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px 10px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #333;
   }
   .title {
     font-size: 24px;
     font-weight: bold;
-    color: #ffeb3b;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
   }
   .profile {
     display: flex;
@@ -34,15 +112,23 @@
     width: 40px; 
     height: 40px;
     border-radius: 50%;
-    border: 2px solid #ffeb3b;
+    border: 2px solid #ffd700;
   }
   .coins {
     font-size: 32px;
     margin: 20px 0;
     text-align: center;
     font-weight: bold;
-    color: #ffeb3b;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    animation: shine 2s ease-in-out infinite alternate;
+  }
+  @keyframes shine {
+    0% { filter: brightness(1); }
+    100% { filter: brightness(1.3); }
   }
   .character-container {
     display: flex;
@@ -53,14 +139,14 @@
     width: 250px;
     height: 250px;
     border-radius: 50%;
-    background-color: #222;
+    background: radial-gradient(circle, #2a2a2a 0%, #000 70%);
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
     position: relative;
-    border: 4px solid #ffeb3b;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 4px solid #ffd700;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
     cursor: pointer;
     transition: transform 0.1s ease;
   }
@@ -81,15 +167,16 @@
     display: flex;
     align-items: center;
     font-size: 16px;
-    background: rgba(255,255,255,0.1);
+    background: rgba(40, 40, 40, 0.8);
     padding: 10px 15px;
     border-radius: 10px;
-    backdrop-filter: blur(10px);
+    border: 1px solid #333;
   }
   .stat img {
     width: 20px;
     height: 20px;
     margin-right: 8px;
+    filter: invert(1);
   }
   
   /* Tabs */
@@ -100,8 +187,8 @@
     margin: 20px 0;
   }
   .tab {
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(40, 40, 40, 0.8);
+    border: 1px solid #333;
     padding: 12px 5px;
     border-radius: 10px;
     cursor: pointer;
@@ -110,89 +197,152 @@
     font-size: 0.9em;
   }
   .tab.active {
-    background: rgba(255,255,255,0.3);
-    border-color: #ffeb3b;
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #ffd700;
+  }
+  .tab:hover {
+    background: rgba(255, 215, 0, 0.1);
   }
   
-  /* Tab Content */
-  .tab-content {
+  /* Pages */
+  .page {
     display: none;
-    background: rgba(255,255,255,0.1);
+    background: rgba(40, 40, 40, 0.8);
     padding: 20px;
     border-radius: 15px;
-    backdrop-filter: blur(10px);
+    border: 1px solid #333;
     margin-top: 20px;
-    text-align: center;
+    min-height: 400px;
   }
-  .tab-content.active {
+  .page.active {
     display: block;
   }
   
-  /* Upgrades */
+  /* Upgrades Grid */
+  .upgrades-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+  }
   .upgrade-item {
-    background: rgba(255,255,255,0.1);
-    padding: 15px;
+    background: rgba(50, 50, 50, 0.8);
+    padding: 20px 15px;
     border-radius: 10px;
-    margin: 10px 0;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid #444;
     cursor: pointer;
     transition: all 0.3s ease;
+    text-align: center;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
   .upgrade-item:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 215, 0, 0.1);
+    border-color: #ffd700;
+    transform: translateY(-2px);
+  }
+  .upgrade-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .upgrade-name {
+    font-weight: bold;
+    color: #ffd700;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+  }
+  .upgrade-cost {
+    color: #ffd700;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+  }
+  .upgrade-level {
+    font-size: 0.8em;
+    color: #888;
   }
   
   /* Leaderboard */
   .leaderboard-item {
     display: flex;
     justify-content: space-between;
-    padding: 10px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 12px;
+    border-bottom: 1px solid #333;
+    background: rgba(40, 40, 40, 0.8);
+    margin: 8px 0;
+    border-radius: 8px;
+    align-items: center;
+  }
+  .leaderboard-item.you {
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid #ffd700;
+  }
+  .player-rank {
+    font-weight: bold;
+    width: 30px;
+    color: #ffd700;
   }
   
   /* Bonuses */
   .bonus-item {
-    background: rgba(255,255,255,0.1);
-    padding: 15px;
+    background: rgba(50, 50, 50, 0.8);
+    padding: 20px;
     border-radius: 10px;
-    margin: 10px 0;
+    margin: 15px 0;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
+    border: 1px solid #444;
   }
   .bonus-item:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 215, 0, 0.1);
+    border-color: #ffd700;
   }
-  
-  .click-instruction {
-    font-size: 18px;
-    margin-top: 20px;
-    color: #ffeb3b;
+  .bonus-reward {
+    color: #ffd700;
     font-weight: bold;
+    font-size: 1.2em;
+    margin: 10px 0;
+  }
+
+  .coin-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    z-index: 2;
+  }
+
+  .logout-btn {
+    background: linear-gradient(to right, #e74c3c, #c0392b);
+    width: 100%;
+    margin-top: 20px;
   }
 
   /* Notification System */
-  .notification-container {
+  .notification {
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 1000;
-    max-width: 300px;
-  }
-
-  .notification {
-    background: rgba(255,255,255,0.95);
-    color: #333;
+    background: rgba(40, 40, 40, 0.95);
+    color: #fff;
     padding: 15px;
-    margin: 10px 0;
     border-radius: 10px;
-    border-left: 4px solid #4caf50;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    transform: translateX(400px);
-    transition: transform 0.3s ease;
+    border-left: 4px solid #ffd700;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     display: flex;
     align-items: center;
     gap: 10px;
+    border: 1px solid #333;
+    z-index: 1000;
+    max-width: 300px;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
   }
 
   .notification.show {
@@ -200,266 +350,314 @@
   }
 
   .notification.success {
-    border-left-color: #4caf50;
+    border-left-color: #ffd700;
   }
 
   .notification.error {
-    border-left-color: #f44336;
-  }
-
-  .notification.info {
-    border-left-color: #2196f3;
-  }
-
-  .notification.warning {
-    border-left-color: #ff9800;
-  }
-
-  .notification-icon {
-    font-size: 20px;
-  }
-
-  .notification-content {
-    flex: 1;
-  }
-
-  .notification-title {
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-
-  .notification-message {
-    font-size: 14px;
-    opacity: 0.9;
-  }
-
-  .notification-close {
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    opacity: 0.7;
-    padding: 0;
-    width: 20px;
-    height: 20px;
-  }
-
-  .notification-close:hover {
-    opacity: 1;
+    border-left-color: #ff4444;
   }
 </style>
 </head>
 <body>
 
-<!-- Notification Container -->
-<div class="notification-container" id="notificationContainer">
-  <!-- Notifications will be added here dynamically -->
+<!-- Login Screen -->
+<div class="container">
+  <div id="login-screen" class="screen active">
+    <h1>F-Clicker Pro</h1>
+    <p>Введите ваш никнейм, чтобы начать играть</p>
+    <input type="text" id="username-input" placeholder="Ваш никнейм" maxlength="20">
+    <button id="login-btn">Начать игру</button>
+  </div>
+
+  <!-- Game Screen -->
+  <div id="game-screen" class="screen">
+    <div class="header">
+      <div class="title">F-Clicker Pro</div>
+      <div class="profile">
+        <img src="https://via.placeholder.com/40/ffd700/000?text=F" alt="Профиль" />
+        <div id="player-name">Игрок</div>
+      </div>
+    </div>
+
+    <div class="coins">
+      <div id="balance">0 <span style="color: #ffd700">Fcoin</span></div>
+    </div>
+
+    <!-- Clicker Page -->
+    <div class="page active" id="clicker-page">
+      <div class="character-container">
+        <div class="character" onclick="handleClick()">
+          <img src="https://pixsafe.online/view?id=RSaco" alt="Кликер" id="clickImage" />
+          <div class="coin-label">Fcoin</div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <img src="https://img.icons8.com/ios/50/ffffff/lightning-bolt.png" alt="Энергия"/>
+          <div id="clickPower">Сила: 1</div>
+        </div>
+        <div class="stat">
+          <img src="https://img.icons8.com/ios/50/ffffff/rocket.png" alt="Ускорить"/>
+          <div id="totalClicks">Кликов: 0</div>
+        </div>
+      </div>
+      <div style="text-align: center; color: #ffd700; font-weight: bold; margin-top: 20px;">
+        Кликай на картинку чтобы зарабатывать Fcoin! 🎯
+      </div>
+    </div>
+
+    <!-- Upgrades Page -->
+    <div class="page" id="upgrades-page">
+      <h3 style="color: #ffd700; margin-bottom: 20px; text-align: center;">⚡ Улучшения</h3>
+      <div class="upgrades-grid" id="upgradesGrid">
+        <!-- Upgrades will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Leaderboard Page -->
+    <div class="page" id="leaderboard-page">
+      <h3 style="color: #ffd700; margin-bottom: 20px; text-align: center;">🏆 Топ игроков</h3>
+      <div class="leaderboard-list" id="leaderboardList">
+        <!-- Leaderboard will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Bonuses Page -->
+    <div class="page" id="bonuses-page">
+      <h3 style="color: #ffd700; margin-bottom: 20px; text-align: center;">🎁 Бонусы</h3>
+      <div class="bonus-item" onclick="claimBonus(2000, 'youtube')">
+        <div style="font-weight:bold; font-size: 1.1em;">📺 Подписка на YouTube</div>
+        <div class="bonus-reward">+2,000 Fcoin</div>
+        <div>Подпишись на наш канал и получи награду!</div>
+      </div>
+      <div class="bonus-item" onclick="claimBonus(500, 'daily')">
+        <div style="font-weight:bold; font-size: 1.1em;">📅 Ежедневный бонус</div>
+        <div class="bonus-reward">+500 Fcoin</div>
+        <div>Заходи каждый день за новой наградой!</div>
+      </div>
+      <div class="bonus-item" onclick="claimBonus(1000, 'friend')">
+        <div style="font-weight:bold; font-size: 1.1em;">👥 Пригласи друга</div>
+        <div class="bonus-reward">+1,000 Fcoin</div>
+        <div>Поделись игрой с друзьями!</div>
+      </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs">
+      <div class="tab active" onclick="showPage('clicker')">🎮 Кликер</div>
+      <div class="tab" onclick="showPage('upgrades')">⚡ Улучшения</div>
+      <div class="tab" onclick="showPage('leaderboard')">🏆 Топ</div>
+      <div class="tab" onclick="showPage('bonuses')">🎁 Бонусы</div>
+    </div>
+
+    <button id="logout-btn" class="logout-btn">Выйти</button>
+  </div>
 </div>
 
-<div class="header">
-  <div class="title">F-Clicker Pro</div>
-  <div class="profile">
-    <img src="https://pixsafe.online/view?id=RSaco" alt="Профиль" />
-    <div>Игрок</div>
-  </div>
-</div>
-
-<div class="coins">
-  <div id="balance">0 F</div>
-</div>
-
-<div class="character-container">
-  <div class="character" onclick="handleClick()">
-    <img src="https://pixsafe.online/view?id=RSaco" alt="Кликер" id="clickImage" />
-  </div>
-</div>
-
-<div class="stats">
-  <div class="stat">
-    <img src="https://img.icons8.com/ios/50/ffffff/lightning-bolt.png" alt="Энергия"/>
-    <div id="clickPower">Сила: 1</div>
-  </div>
-  <div class="stat">
-    <img src="https://img.icons8.com/ios/50/ffffff/rocket.png" alt="Ускорить"/>
-    <div id="totalClicks">Кликов: 0</div>
-  </div>
-</div>
-
-<!-- Tabs Navigation -->
-<div class="tabs">
-  <div class="tab active" onclick="showTab('clicker')">🎮 Кликер</div>
-  <div class="tab" onclick="showTab('upgrades')">⚡ Улучшения</div>
-  <div class="tab" onclick="showTab('leaderboard')">🏆 Топ</div>
-  <div class="tab" onclick="showTab('bonuses')">🎁 Бонусы</div>
-</div>
-
-<!-- Tab Contents -->
-<div class="tab-content active" id="clicker-tab">
-  <div class="click-instruction">Кликай на картинку выше для заработка! 🎯</div>
-</div>
-
-<div class="tab-content" id="upgrades-tab">
-  <div class="upgrade-item" onclick="buyUpgrade(1)">
-    <div style="font-weight:bold;">💪 Усиленный палец</div>
-    <div>Цена: 50 F</div>
-    <div>+1 к силе клика</div>
-  </div>
-  <div class="upgrade-item" onclick="buyUpgrade(2)">
-    <div style="font-weight:bold;">🚀 Автокликер</div>
-    <div>Цена: 200 F</div>
-    <div>Автоматические клики</div>
-  </div>
-  <div class="upgrade-item" onclick="buyUpgrade(3)">
-    <div style="font-weight:bold;">⚡ Мега-клик</div>
-    <div>Цена: 500 F</div>
-    <div>+5 к силе клика</div>
-  </div>
-</div>
-
-<div class="tab-content" id="leaderboard-tab">
-  <div class="leaderboard-item">
-    <div>1. ProGamer</div>
-    <div>15,000 F</div>
-  </div>
-  <div class="leaderboard-item">
-    <div>2. ClickMaster</div>
-    <div>12,000 F</div>
-  </div>
-  <div class="leaderboard-item">
-    <div>3. Вы</div>
-    <div id="playerScore">0 F</div>
-  </div>
-</div>
-
-<div class="tab-content" id="bonuses-tab">
-  <div class="bonus-item" onclick="claimBonus(2000, 'youtube')">
-    <div style="font-weight:bold;">📺 Подписка на YouTube</div>
-    <div style="color:#4caf50;">+2,000 F</div>
-    <div>Подпишись на канал</div>
-  </div>
-  <div class="bonus-item" onclick="claimBonus(500, 'daily')">
-    <div style="font-weight:bold;">📅 Ежедневный бонус</div>
-    <div style="color:#4caf50;">+500 F</div>
-    <div>Заходи каждый день!</div>
-  </div>
-  <div class="bonus-item" onclick="claimBonus(1000, 'friend')">
-    <div style="font-weight:bold;">👥 Пригласи друга</div>
-    <div style="color:#4caf50;">+1,000 F</div>
-    <div>Поделись игрой</div>
-  </div>
-</div>
+<div id="notification" class="notification"></div>
 
 <script>
+  // Game State
+  let currentUser = null;
   let balance = 0;
   let clickPower = 1;
   let totalClicks = 0;
   let autoClicker = 0;
   let claimedBonuses = [];
 
-  // Notification System
-  function showNotification(title, message, type = 'success') {
-    const container = document.getElementById('notificationContainer');
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    
-    const icons = {
-      success: '✅',
-      error: '❌',
-      info: 'ℹ️',
-      warning: '⚠️'
-    };
+  // Система улучшений
+  const upgradesData = [
+    {
+      id: 1,
+      name: "💪 Усиленный палец",
+      cost: 50,
+      power: 1,
+      description: "+1 к силе клика",
+      level: 0,
+      maxLevel: 10
+    },
+    {
+      id: 2,
+      name: "🚀 Автокликер",
+      cost: 200,
+      power: 0,
+      description: "+1 автоклик в секунду",
+      level: 0,
+      maxLevel: 5
+    },
+    {
+      id: 3,
+      name: "⚡ Мега-клик",
+      cost: 500,
+      power: 5,
+      description: "+5 к силе клика",
+      level: 0,
+      maxLevel: 3
+    },
+    {
+      id: 4,
+      name: "🔮 Магический палец",
+      cost: 1000,
+      power: 10,
+      description: "+10 к силе клика",
+      level: 0,
+      maxLevel: 2
+    }
+  ];
 
-    notification.innerHTML = `
-      <div class="notification-icon">${icons[type]}</div>
-      <div class="notification-content">
-        <div class="notification-title">${title}</div>
-        <div class="notification-message">${message}</div>
-      </div>
-      <button class="notification-close" onclick="this.parentElement.remove()">×</button>
-    `;
-
-    container.appendChild(notification);
-
-    // Анимация появления
-    setTimeout(() => {
-      notification.classList.add('show');
-    }, 100);
-
-    // Автоматическое удаление через 5 секунд
-    setTimeout(() => {
-      if (notification.parentElement) {
-        notification.classList.remove('show');
-        setTimeout(() => {
-          if (notification.parentElement) {
-            notification.remove();
-          }
-        }, 300);
-      }
-    }, 5000);
+  // Database Functions
+  function initDatabase() {
+    if (!localStorage.getItem('fclicker_users')) {
+      localStorage.setItem('fclicker_users', JSON.stringify({}));
+    }
   }
 
+  function getUsers() {
+    return JSON.parse(localStorage.getItem('fclicker_users')) || {};
+  }
+
+  function saveUser(username, userData) {
+    const users = getUsers();
+    users[username] = {
+      ...userData,
+      lastPlayed: new Date().toISOString()
+    };
+    localStorage.setItem('fclicker_users', JSON.stringify(users));
+  }
+
+  function getUser(username) {
+    const users = getUsers();
+    return users[username] || null;
+  }
+
+  // Notification System
+  function showNotification(message, isSuccess = true) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.className = `notification ${isSuccess ? 'success' : 'error'}`;
+    notification.classList.add('show');
+    
+    setTimeout(() => {
+      notification.classList.remove('show');
+    }, 3000);
+  }
+
+  // Leaderboard
+  function updateLeaderboard() {
+    const users = getUsers();
+    const sortedUsers = Object.entries(users)
+      .sort((a, b) => b[1].balance - a[1].balance)
+      .slice(0, 10);
+    
+    const container = document.getElementById('leaderboardList');
+    container.innerHTML = '';
+    
+    if (sortedUsers.length === 0) {
+      container.innerHTML = '<div style="text-align: center; padding: 20px; color: #888;">Пока нет игроков</div>';
+      return;
+    }
+    
+    sortedUsers.forEach(([username, data], index) => {
+      const item = document.createElement('div');
+      item.className = `leaderboard-item ${username === currentUser ? 'you' : ''}`;
+      
+      item.innerHTML = `
+        <div class="player-rank">${index + 1}</div>
+        <div style="flex: 1; text-align: left; margin-left: 10px;">${username}</div>
+        <div style="color: #ffd700; font-weight: bold;">${data.balance} Fcoin</div>
+      `;
+      
+      container.appendChild(item);
+    });
+  }
+
+  // Game Functions
   function handleClick() {
+    if (!currentUser) return;
+    
     balance += clickPower;
     totalClicks++;
     updateDisplay();
-
-
-  function updateDisplay() {
-    document.getElementById('balance').textContent = balance.toLocaleString() + ' F';
-    document.getElementById('clickPower').textContent = 'Сила: ' + clickPower;
-    document.getElementById('totalClicks').textContent = 'Кликов: ' + totalClicks;
-    document.getElementById('playerScore').textContent = balance.toLocaleString() + ' F';
+    saveGame();
   }
 
-  function showTab(tabName) {
-    document.querySelectorAll('.tab-content').forEach(tab => {
-      tab.classList.remove('active');
+  function updateDisplay() {
+    document.getElementById('balance').innerHTML = balance.toLocaleString() + ' <span style="color: #ffd700">Fcoin</span>';
+    document.getElementById('clickPower').textContent = 'Сила: ' + clickPower;
+    document.getElementById('totalClicks').textContent = 'Кликов: ' + totalClicks;
+    document.getElementById('player-name').textContent = currentUser;
+    renderUpgrades();
+    updateLeaderboard();
+  }
+
+  function showPage(pageName) {
+    document.querySelectorAll('.page').forEach(page => {
+      page.classList.remove('active');
     });
     document.querySelectorAll('.tab').forEach(tab => {
       tab.classList.remove('active');
     });
 
-    document.getElementById(tabName + '-tab').classList.add('active');
+    document.getElementById(pageName + '-page').classList.add('active');
     event.target.classList.add('active');
   }
 
+  function renderUpgrades() {
+    const container = document.getElementById('upgradesGrid');
+    container.innerHTML = '';
+
+    upgradesData.forEach(upgrade => {
+      const canAfford = balance >= upgrade.cost;
+      const isMaxLevel = upgrade.level >= upgrade.maxLevel;
+      
+      const element = document.createElement('div');
+      element.className = `upgrade-item ${!canAfford || isMaxLevel ? 'disabled' : ''}`;
+      element.onclick = () => !isMaxLevel && canAfford && buyUpgrade(upgrade.id);
+      
+      element.innerHTML = `
+        <div class="upgrade-name">${upgrade.name}</div>
+        <div class="upgrade-cost">${upgrade.cost} Fcoin</div>
+        <div style="font-size: 0.8em; margin-bottom: 5px;">${upgrade.description}</div>
+        <div class="upgrade-level">Ур. ${upgrade.level}/${upgrade.maxLevel}</div>
+      `;
+      
+      container.appendChild(element);
+    });
+  }
+
   function buyUpgrade(upgradeId) {
-    let upgradeName = '';
-    let cost = 0;
+    const upgrade = upgradesData.find(u => u.id === upgradeId);
     
-    if (upgradeId === 1 && balance >= 50) {
-      balance -= 50;
-      clickPower += 1;
-      upgradeName = '💪 Усиленный палец';
-      cost = 50;
-    } else if (upgradeId === 2 && balance >= 200) {
-      balance -= 200;
-      autoClicker += 1;
-      upgradeName = '🚀 Автокликер';
-      cost = 200;
-    } else if (upgradeId === 3 && balance >= 500) {
-      balance -= 500;
-      clickPower += 5;
-      upgradeName = '⚡ Мега-клик';
-      cost = 500;
-    } else {
-      showNotification('Недостаточно средств', `Нужно больше F для покупки!`, 'error');
+    if (!upgrade || balance < upgrade.cost || upgrade.level >= upgrade.maxLevel) {
       return;
     }
     
+    balance -= upgrade.cost;
+    upgrade.level++;
+    
+    if (upgrade.power > 0) {
+      clickPower += upgrade.power;
+    } else {
+      autoClicker += 1;
+    }
+    
+    upgrade.cost = Math.floor(upgrade.cost * 1.5);
+    
     updateDisplay();
-    showNotification('Улучшение куплено!', `${upgradeName} активировано!`, 'success');
+    saveGame();
+    showNotification(`${upgrade.name} улучшено до уровня ${upgrade.level}!`);
   }
 
   function claimBonus(amount, bonusType) {
     if (claimedBonuses.includes(bonusType)) {
-      showNotification('Бонус уже получен', 'Этот бонус можно получить только один раз', 'warning');
+      showNotification('Этот бонус уже получен!', false);
       return;
     }
     
     balance += amount;
     claimedBonuses.push(bonusType);
     updateDisplay();
+    saveGame();
     
     let message = '';
     switch(bonusType) {
@@ -475,31 +673,130 @@
         break;
     }
     
-    showNotification('Бонус получен!', `+${amount.toLocaleString()} F! ${message}`, 'success');
+    showNotification(`+${amount.toLocaleString()} Fcoin! ${message}`);
   }
 
-  // Автокликер функция
-  function autoClick() {
-    if (autoClicker > 0) {
-      balance += autoClicker;
-      totalClicks += autoClicker;
-      updateDisplay();
+  // Save/Load Game
+  function saveGame() {
+    if (!currentUser) return;
+    
+    const userData = {
+      balance,
+      clickPower,
+      totalClicks,
+      autoClicker,
+      claimedBonuses,
+      upgrades: upgradesData.map(upgrade => ({
+        id: upgrade.id,
+        level: upgrade.level,
+        cost: upgrade.cost
+      }))
+    };
+    
+    saveUser(currentUser, userData);
+    localStorage.setItem('fclicker_lastUser', currentUser);
+  }
+
+  function loadGame() {
+    if (!currentUser) return;
+    
+    const userData = getUser(currentUser);
+    if (userData) {
+      balance = userData.balance || 0;
+      clickPower = userData.clickPower || 1;
+      totalClicks = userData.totalClicks || 0;
+      autoClicker = userData.autoClicker || 0;
+      claimedBonuses = userData.claimedBonuses || [];
+      
+      // Load upgrades
+      if (userData.upgrades) {
+        userData.upgrades.forEach(savedUpgrade => {
+          const upgrade = upgradesData.find(u => u.id === savedUpgrade.id);
+          if (upgrade) {
+            upgrade.level = savedUpgrade.level;
+            upgrade.cost = savedUpgrade.cost;
+          }
+        });
+      }
     }
   }
 
-  // Автокликер каждую секунду
+  // Auto-clicker
+  function autoClick() {
+    if (autoClicker > 0 && currentUser) {
+      balance += autoClicker;
+      totalClicks += autoClicker;
+      updateDisplay();
+      saveGame();
+    }
+  }
+
   setInterval(autoClick, 1000);
 
-  // Показываем приветственное уведомление при загрузке
-  window.addEventListener('load', function() {
-    setTimeout(() => {
-      showNotification('Добро пожаловать!', 'Кликай на картинку чтобы зарабатывать F!', 'info');
-    }, 1000);
-  });
+  // Login System
+  function login() {
+    const username = document.getElementById('username-input').value.trim();
+    
+    if (!username) {
+      showNotification('Пожалуйста, введите никнейм', false);
+      return;
+    }
+    
+    currentUser = username;
+    
+    // Initialize or load user data
+    if (!getUser(username)) {
+      const initialData = {
+        balance: 0,
+        clickPower: 1,
+        totalClicks: 0,
+        autoClicker: 0,
+        claimedBonuses: [],
+        upgrades: upgradesData.map(upgrade => ({
+          id: upgrade.id,
+          level: 0,
+          cost: upgrade.cost
+        }))
+      };
+      saveUser(username, initialData);
+      showNotification(`Добро пожаловать, ${username}!`);
+    } else {
+      loadGame();
+      showNotification(`С возвращением, ${username}!`);
+    }
+    
+    // Update UI
+    document.getElementById('login-screen').classList.remove('active');
+    document.getElementById('game-screen').classList.add('active');
+    updateDisplay();
+  }
+
+  function logout() {
+    saveGame();
+    currentUser = null;
+    document.getElementById('username-input').value = '';
+    document.getElementById('game-screen').classList.remove('active');
+    document.getElementById('login-screen').classList.add('active');
+  }
 
   // Initialize
-  updateDisplay();
+  document.addEventListener('DOMContentLoaded', () => {
+    initDatabase();
+    
+    // Event listeners
+    document.getElementById('login-btn').addEventListener('click', login);
+    document.getElementById('logout-btn').addEventListener('click', logout);
+    document.getElementById('username-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') login();
+    });
+    
+    // Auto-login
+    const lastUser = localStorage.getItem('fclicker_lastUser');
+    if (lastUser && getUser(lastUser)) {
+      document.getElementById('username-input').value = lastUser;
+      setTimeout(login, 500);
+    }
+  });
 </script>
-
 </body>
 </html>
