@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>F-Clicker Pro</title>
+<style>
+  body {
+    background-color: #111;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 10px;
+  }
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffeb3b;
+  }
+  .profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .profile img {
+    width: 40px; 
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #ffeb3b;
+  }
+  .coins {
+    font-size: 32px;
+    margin: 20px 0;
+    text-align: center;
+    font-weight: bold;
+    color: #ffeb3b;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  }
+  .character-container {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
+  }
+  .character {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background-color: #222;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    border: 4px solid #ffeb3b;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    cursor: pointer;
+    transition: transform 0.1s ease;
+  }
+  .character:active {
+    transform: scale(0.95);
+  }
+  .character img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 30px 0;
+  }
+  .stat {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    background: rgba(255,255,255,0.1);
+    padding: 10px 15px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+  }
+  .stat img {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+  
+  /* Tabs */
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .tab {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 12px 5px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    font-size: 0.9em;
+  }
+  .tab.active {
+    background: rgba(255,255,255,0.3);
+    border-color: #ffeb3b;
+  }
+  
+  /* Tab Content */
+  .tab-content {
+    display: none;
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    margin-top: 20px;
+    text-align: center;
+  }
+  .tab-content.active {
+    display: block;
+  }
+  
+  /* Upgrades */
+  .upgrade-item {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+    border: 1px solid rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .upgrade-item:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  
+  /* Leaderboard */
+  .leaderboard-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  /* Bonuses */
+  .bonus-item {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .bonus-item:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  
+  .click-instruction {
+    font-size: 18px;
+    margin-top: 20px;
+    color: #ffeb3b;
+    font-weight: bold;
+  }
+
+  /* Notification System */
+  .notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 300px;
+  }
+
+  .notification {
+    background: rgba(255,255,255,0.95);
+    color: #333;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border-left: 4px solid #4caf50;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .notification.show {
+    transform: translateX(0);
+  }
+
+  .notification.success {
+    border-left-color: #4caf50;
+  }
+
+  .notification.error {
+    border-left-color: #f44336;
+  }
+
+  .notification.info {
+    border-left-color: #2196f3;
+  }
+
+  .notification.warning {
+    border-left-color: #ff9800;
+  }
+
+  .notification-icon {
+    font-size: 20px;
+  }
+
+  .notification-content {
+    flex: 1;
+  }
+
+  .notification-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .notification-message {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  .notification-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.7;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  .notification-close:hover {
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- Notification Container -->
+<div class="notification-container" id="notificationContainer">
+  <!-- Notifications will be added here dynamically -->
+</div>
+
+<div class="header">
+  <div class="title">F-Clicker Pro</div>
+  <div class="profile">
+    <img src="https://pixsafe.online/view?id=RSaco" alt="Профиль" />
+    <div>Игрок</div>
+  </div>
+</div>
+
+<div class="coins">
+  <div id="balance">0 F</div>
+</div>
+
+<div class="character-container">
+  <div class="character" onclick="handleClick()">
+    <img src="https://pixsafe.online/view?id=RSaco" alt="Кликер" id="clickImage" />
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat">
+    <img src="https://img.icons8.com/ios/50/ffffff/lightning-bolt.png" alt="Энергия"/>
+    <div id="clickPower">Сила: 1</div>
+  </div>
+  <div class="stat">
+    <img src="https://img.icons8.com/ios/50/ffffff/rocket.png" alt="Ускорить"/>
+    <div id="totalClicks">Кликов: 0</div>
+  </div>
+</div>
+
+<!-- Tabs Navigation -->
+<div class="tabs">
+  <div class="tab active" onclick="showTab('clicker')">🎮 Кликер</div>
+  <div class="tab" onclick="showTab('upgrades')">⚡ Улучшения</div>
+  <div class="tab" onclick="showTab('leaderboard')">🏆 Топ</div>
+  <div class="tab" onclick="showTab('bonuses')">🎁 Бонусы</div>
+</div>
+
+<!-- Tab Contents -->
+<div class="tab-content active" id="clicker-tab">
+  <div class="click-instruction">Кликай на картинку выше для заработка! 🎯</div>
+</div>
+
+<div class="tab-content" id="upgrades-tab">
+  <div class="upgrade-item" onclick="buyUpgrade(1)">
+    <div style="font-weight:bold;">💪 Усиленный палец</div>
+    <div>Цена: 50 F</div>
+    <div>+1 к силе клика</div>
+  </div>
+  <div class="upgrade-item" onclick="buyUpgrade(2)">
+    <div style="font-weight:bold;">🚀 Автокликер</div>
+    <div>Цена: 200 F</div>
+    <div>Автоматические клики</div>
+  </div>
+  <div class="upgrade-item" onclick="buyUpgrade(3)">
+    <div style="font-weight:bold;">⚡ Мега-клик</div>
+    <div>Цена: 500 F</div>
+    <div>+5 к силе клика</div>
+  </div>
+</div>
+
+<div class="tab-content" id="leaderboard-tab">
+  <div class="leaderboard-item">
+    <div>1. ProGamer</div>
+    <div>15,000 F</div>
+  </div>
+  <div class="leaderboard-item">
+    <div>2. ClickMaster</div>
+    <div>12,000 F</div>
+  </div>
+  <div class="leaderboard-item">
+    <div>3. Вы</div>
+    <div id="playerScore">0 F</div>
+  </div>
+</div>
+
+<div class="tab-content" id="bonuses-tab">
+  <div class="bonus-item" onclick="claimBonus(2000, 'youtube')">
+    <div style="font-weight:bold;">📺 Подписка на YouTube</div>
+    <div style="color:#4caf50;">+2,000 F</div>
+    <div>Подпишись на канал</div>
+  </div>
+  <div class="bonus-item" onclick="claimBonus(500, 'daily')">
+    <div style="font-weight:bold;">📅 Ежедневный бонус</div>
+    <div style="color:#4caf50;">+500 F</div>
+    <div>Заходи каждый день!</div>
+  </div>
+  <div class="bonus-item" onclick="claimBonus(1000, 'friend')">
+    <div style="font-weight:bold;">👥 Пригласи друга</div>
+    <div style="color:#4caf50;">+1,000 F</div>
+    <div>Поделись игрой</div>
+  </div>
+</div>
+
+<script>
+  let balance = 0;
+  let clickPower = 1;
+  let totalClicks = 0;
+  let autoClicker = 0;
+  let claimedBonuses = [];
+
+  // Notification System
+  function showNotification(title, message, type = 'success') {
+    const container = document.getElementById('notificationContainer');
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    const icons = {
+      success: '✅',
+      error: '❌',
+      info: 'ℹ️',
+      warning: '⚠️'
+    };
+
+    notification.innerHTML = `
+      <div class="notification-icon">${icons[type]}</div>
+      <div class="notification-content">
+        <div class="notification-title">${title}</div>
+        <div class="notification-message">${message}</div>
+      </div>
+      <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+    `;
+
+    container.appendChild(notification);
+
+    // Анимация появления
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 100);
+
+    // Автоматическое удаление через 5 секунд
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.classList.remove('show');
+        setTimeout(() => {
+          if (notification.parentElement) {
+            notification.remove();
+          }
+        }, 300);
+      }
+    }, 5000);
+  }
+
+  function handleClick() {
+    balance += clickPower;
+    totalClicks++;
+    updateDisplay();
+
+
+  function updateDisplay() {
+    document.getElementById('balance').textContent = balance.toLocaleString() + ' F';
+    document.getElementById('clickPower').textContent = 'Сила: ' + clickPower;
+    document.getElementById('totalClicks').textContent = 'Кликов: ' + totalClicks;
+    document.getElementById('playerScore').textContent = balance.toLocaleString() + ' F';
+  }
+
+  function showTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+
+    document.getElementById(tabName + '-tab').classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function buyUpgrade(upgradeId) {
+    let upgradeName = '';
+    let cost = 0;
+    
+    if (upgradeId === 1 && balance >= 50) {
+      balance -= 50;
+      clickPower += 1;
+      upgradeName = '💪 Усиленный палец';
+      cost = 50;
+    } else if (upgradeId === 2 && balance >= 200) {
+      balance -= 200;
+      autoClicker += 1;
+      upgradeName = '🚀 Автокликер';
+      cost = 200;
+    } else if (upgradeId === 3 && balance >= 500) {
+      balance -= 500;
+      clickPower += 5;
+      upgradeName = '⚡ Мега-клик';
+      cost = 500;
+    } else {
+      showNotification('Недостаточно средств', `Нужно больше F для покупки!`, 'error');
+      return;
+    }
+    
+    updateDisplay();
+    showNotification('Улучшение куплено!', `${upgradeName} активировано!`, 'success');
+  }
+
+  function claimBonus(amount, bonusType) {
+    if (claimedBonuses.includes(bonusType)) {
+      showNotification('Бонус уже получен', 'Этот бонус можно получить только один раз', 'warning');
+      return;
+    }
+    
+    balance += amount;
+    claimedBonuses.push(bonusType);
+    updateDisplay();
+    
+    let message = '';
+    switch(bonusType) {
+      case 'youtube':
+        message = 'Подпишись на наш YouTube канал!';
+        window.open('https://youtube.com', '_blank');
+        break;
+      case 'daily':
+        message = 'Возвращайся завтра за новым бонусом!';
+        break;
+      case 'friend':
+        message = 'Поделись игрой с друзьями!';
+        break;
+    }
+    
+    showNotification('Бонус получен!', `+${amount.toLocaleString()} F! ${message}`, 'success');
+  }
+
+  // Автокликер функция
+  function autoClick() {
+    if (autoClicker > 0) {
+      balance += autoClicker;
+      totalClicks += autoClicker;
+      updateDisplay();
+    }
+  }
+
+  // Автокликер каждую секунду
+  setInterval(autoClick, 1000);
+
+  // Показываем приветственное уведомление при загрузке
+  window.addEventListener('load', function() {
+    setTimeout(() => {
+      showNotification('Добро пожаловать!', 'Кликай на картинку чтобы зарабатывать F!', 'info');
+    }, 1000);
+  });
+
+  // Initialize
+  updateDisplay();
+</script>
+
+</body>
+</html>
